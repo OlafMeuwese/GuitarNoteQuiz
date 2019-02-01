@@ -1,0 +1,104 @@
+<html>
+<head>
+  <title>Guitare Note Quiz</title>
+  <style>
+    li {
+      float: left;
+    }
+    h2 {
+      padding-top: 30px;
+      margin-left: 50px;
+      width: 100px;
+      height: 50px;
+      text-align: center;
+    }
+    button {
+      margin-left: 65px;
+      width: 75px;
+    }
+    div {
+      width: 300px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+<div>
+  <h1>Guitare Note Quiz</h1>
+  <ul id="strings" style="list-style: none; padding-left: 0">
+    <li><input name="string" type="radio" value="E" checked/>E</li>
+    <li><input name="string" type="radio" value="A"/>A</li>
+    <li><input name="string" type="radio" value="D"/>D</li>
+    <li><input name="string" type="radio" value="G"/>G</li>
+    <li><input name="string" type="radio" value="B"/>B</li>
+    <li><input name="string" type="radio" value="all"/>All</li>
+  </ul>
+  <p style="clear: both"></p>
+  <ul style="list-style: none; padding-left: 0">
+    <li><input name="direction" type="radio" value="position" checked>position</li>
+    <li><input name="direction" type="radio" value="note">note</li>
+  </ul>
+  <p style="clear: both"></p>
+  <h2 id="place"></h2>
+  <button id="next">Next</button>
+</div>
+</body>
+<script>
+  let notes = {
+    "E": {1: "F", 3: "G", 5: "A", 7: "B", 8: "C", 10: "D", 12: "E"},
+    "A": {2: "B", 3: "C", 5: "D", 7: "E", 8: "F", 10: "G", 12: "A"},
+    "D": {2: "B", 3: "C", 5: "D", 7: "E", 8: "F", 10: "G", 12: "A"},
+    "G": {2: "B", 3: "C", 5: "D", 7: "E", 8: "F", 10: "G", 12: "A"},
+    "B": {2: "B", 3: "C", 5: "D", 7: "E", 8: "F", 10: "G", 12: "A"},
+  };
+  var question = false;
+  var currentQuestion = {"Q": null, "A": null, "string": null};
+
+  document.querySelector("#next").addEventListener("click", function (event) {
+    let stringOption = document.querySelector('input[name="string"]:checked').value;
+    let directionOption = document.querySelector('input[name="direction"]:checked').value;
+    let place = document.querySelector("#place");
+    if (question === true) {
+      place.textContent = `${currentQuestion['A']}`;
+      event.target.textContent = 'Next';
+      question = false;
+    } else {
+      event.target.textContent = 'Check';
+      currentQuestion = pickQuestion(stringOption, directionOption);
+      question = true;
+      place.textContent = `${currentQuestion['Q']} on ${currentQuestion['string']}?`;
+    }
+  });
+  let randomKey = function (obj) {
+    let keys = Object.keys(obj);
+    return keys[keys.length * Math.random() << 0]
+  };
+
+  let randomPositionAndNote = function(stringObject){
+    let position = randomKey(stringObject);
+    let note = stringObject[position]
+    return [position, note];
+  };
+
+  let pickQuestion = function (string, direction) {
+    if (string === 'all') {
+      string = randomKey(notes)
+    }
+    if (direction === "position") {
+
+      do {
+        [position, note] = randomPositionAndNote(notes[string])
+      } while (position === currentQuestion['Q']);
+
+      return {"Q": position, "A": note, "string": string}
+    } else {
+      do {
+        [position, note] = randomPositionAndNote(notes[string])
+      } while (note === currentQuestion['Q']);
+
+      return {"Q": note, "A": position, "string": string}
+    }
+  }
+
+</script>
+</html>
